@@ -8,7 +8,7 @@ class Tugas {
 
   factory Tugas.fromJson(Map<String, dynamic> obj) {
     return Tugas(
-      id: obj['id'],
+      id: (obj['id']),
       title: obj['title'],
       description: obj['description'],
       deadline: obj['deadline'],

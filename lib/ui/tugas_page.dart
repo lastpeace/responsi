@@ -36,7 +36,7 @@ class _TugasPageState extends State<TugasPage> {
           if (snapshot.hasError) {
             print(snapshot.error);
             return const Center(
-              child: Text('Terjadi kesalahan'),
+              child: Text('Ngga bisa load'),
             );
           }
           return snapshot.hasData

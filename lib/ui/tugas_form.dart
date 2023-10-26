@@ -18,8 +18,8 @@ class _TugasFormState extends State<TugasForm> {
   String judul = "TAMBAH TUGAS";
   String tombolSubmit = "SIMPAN";
 
-  final _kodeTugasTextboxController = TextEditingController();
-  final _namaTugasTextboxController = TextEditingController();
+  final _titleTugasTextboxController = TextEditingController();
+  final _descriptionTugasTextboxController = TextEditingController();
   final _deadlineTextboxController = TextEditingController();
 
   @override
@@ -33,8 +33,8 @@ class _TugasFormState extends State<TugasForm> {
       setState(() {
         judul = "UBAH TUGAS";
         tombolSubmit = "UBAH";
-        _kodeTugasTextboxController.text = widget.tugas!.title!;
-        _namaTugasTextboxController.text = widget.tugas!.description!;
+        _titleTugasTextboxController.text = widget.tugas!.title!;
+        _descriptionTugasTextboxController.text = widget.tugas!.description!;
         _deadlineTextboxController.text = widget.tugas!.deadline.toString();
       });
     } else {
@@ -54,10 +54,12 @@ class _TugasFormState extends State<TugasForm> {
             key: _formKey,
             child: Column(
               children: [
-                _kodeTugasTextField(),
-                _namaTugasTextField(),
+                _titleTugasTextField(),
+                _descriptionTugasTextField(),
                 _deadlineTextField(),
-                _buttonSubmit()
+                _buttonSubmit(),
+                if (widget.tugas != null)
+                  _buttonDelete(), // Tambah tombol hapus jika sedang mengubah tugas
               ],
             ),
           ),
@@ -66,28 +68,28 @@ class _TugasFormState extends State<TugasForm> {
     );
   }
 
-  Widget _kodeTugasTextField() {
+  Widget _titleTugasTextField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: "Kode Tugas"),
+      decoration: const InputDecoration(labelText: "Title Tugas"),
       keyboardType: TextInputType.text,
-      controller: _kodeTugasTextboxController,
+      controller: _titleTugasTextboxController,
       validator: (value) {
         if (value!.isEmpty) {
-          return "Kode Tugas harus diisi";
+          return "title Tugas harus diisi";
         }
         return null;
       },
     );
   }
 
-  Widget _namaTugasTextField() {
+  Widget _descriptionTugasTextField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: "Nama Tugas"),
+      decoration: const InputDecoration(labelText: "Description Tugas"),
       keyboardType: TextInputType.text,
-      controller: _namaTugasTextboxController,
+      controller: _descriptionTugasTextboxController,
       validator: (value) {
         if (value!.isEmpty) {
-          return "Nama Tugas harus diisi";
+          return "description Tugas harus diisi";
         }
         return null;
       },
@@ -96,7 +98,7 @@ class _TugasFormState extends State<TugasForm> {
 
   Widget _deadlineTextField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: "Deadline"),
+      decoration: const InputDecoration(labelText: "Deadline Tugas"),
       keyboardType: TextInputType.text,
       controller: _deadlineTextboxController,
       validator: (value) {
@@ -110,19 +112,31 @@ class _TugasFormState extends State<TugasForm> {
 
   Widget _buttonSubmit() {
     return OutlinedButton(
-        child: Text(tombolSubmit),
-        onPressed: () {
-          var validate = _formKey.currentState!.validate();
-          if (validate) {
-            if (!_isLoading) {
-              if (widget.tugas != null) {
-                ubah();
-              } else {
-                simpan();
-              }
+      child: Text(tombolSubmit),
+      onPressed: () {
+        var validate = _formKey.currentState!.validate();
+        if (validate) {
+          if (!_isLoading) {
+            if (widget.tugas != null) {
+              ubah();
+            } else {
+              simpan();
             }
           }
-        });
+        }
+      },
+    );
+  }
+
+  Widget _buttonDelete() {
+    return OutlinedButton(
+      child: const Text("HAPUS"),
+      onPressed: () {
+        if (widget.tugas != null) {
+          hapus();
+        }
+      },
+    );
   }
 
   simpan() {
@@ -130,26 +144,28 @@ class _TugasFormState extends State<TugasForm> {
       _isLoading = true;
     });
     Tugas createTugas = Tugas(id: null);
-    createTugas.title = _kodeTugasTextboxController.text;
-    createTugas.description = _namaTugasTextboxController.text;
+    createTugas.title = _titleTugasTextboxController.text;
+    createTugas.description = _descriptionTugasTextboxController.text;
     createTugas.deadline = _deadlineTextboxController.text;
     TugasBloc.addTugas(tugas: createTugas).then((value) {
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (BuildContext context) => const TugasPage()));
+        builder: (BuildContext context) => const TugasPage(),
+      ));
     }, onError: (error) {
       showDialog(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-                content: const Text("Simpan gagal, silahkan coba lagi"),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('OK'),
-                  ),
-                ],
-              ));
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          content: const Text("Simpan gagal, silahkan coba lagi"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     });
     setState(() {
       _isLoading = false;
@@ -161,28 +177,59 @@ class _TugasFormState extends State<TugasForm> {
       _isLoading = true;
     });
     Tugas updateTugas = Tugas(id: widget.tugas!.id);
-    updateTugas.title = _kodeTugasTextboxController.text;
-    updateTugas.description = _namaTugasTextboxController.text;
+    updateTugas.title = _titleTugasTextboxController.text;
+    updateTugas.description = _descriptionTugasTextboxController.text;
     updateTugas.deadline = _deadlineTextboxController.text;
     TugasBloc.updateTugas(tugas: updateTugas).then((value) {
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (BuildContext context) => const TugasPage()));
+        builder: (BuildContext context) => const TugasPage(),
+      ));
     }, onError: (error) {
       showDialog(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-                content: const Text(
-                    "Permintaan ubah data gagal, silahkan coba lagi"),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('OK'),
-                  ),
-                ],
-              ));
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          content: const Text("Permintaan ubah data gagal, silahkan coba lagi"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     });
     setState(() {
       _isLoading = false;
     });
+  }
+
+  hapus() {
+    if (widget.tugas != null) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      TugasBloc.deleteTugas(id: widget.tugas!.id).then((value) {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (BuildContext context) => const TugasPage(),
+        ));
+      }, onError: (error) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            content: const Text("Permintaan hapus data gagal, silahkan coba lagi"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      });
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 }

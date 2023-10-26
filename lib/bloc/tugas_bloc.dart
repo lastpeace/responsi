@@ -5,7 +5,7 @@ import 'package:responsi/model/tugas.dart';
 
 class TugasBloc {
   static Future<List<Tugas>> getTugas() async {
-    String apiUrl = ApiUrl.listTugas;
+    String apiUrl = ApiUrl.listAssigment;
     var response = await Api().get(apiUrl);
     var jsonObj = json.decode(response.body);
     List<dynamic> listTugas = (jsonObj['result']['data'] as List<dynamic>);
@@ -17,7 +17,7 @@ class TugasBloc {
   }
 
   static Future addTugas({Tugas? tugas}) async {
-    String apiUrl = ApiUrl.createTugas;
+    String apiUrl = ApiUrl.createAssignment;
 
     var body = {
       "title": tugas!.title,
@@ -30,20 +30,27 @@ class TugasBloc {
   }
 
   static Future<bool> updateTugas({required Tugas tugas}) async {
-    String apiUrl = ApiUrl.updateTugas(tugas.id!);
+    String apiUrl = ApiUrl.updateAssignment(tugas.id!);
 
     var body = {
       "title": tugas.title,
       "description": tugas.description,
-      "deadline": tugas.deadline.toString()
+      "deadline": tugas.deadline
     };
+    print("Body : $body");
     var response = await Api().post(apiUrl, body);
     var jsonObj = json.decode(response.body);
-    return jsonObj['status'];
+
+    // Periksa status respons dan kembalikan hasil yang sesuai
+    if (jsonObj['status'] == 'success') {
+      return true; // Berhasil mengubah tugas
+    } else {
+      return false; // Gagal mengubah tugas
+    }
   }
 
   static Future<bool> deleteTugas({int? id}) async {
-    String apiUrl = ApiUrl.deleteTugas(id!);
+    String apiUrl = ApiUrl.deleteAssignment(id!);
 
     var response = await Api().delete(apiUrl);
     var jsonObj = json.decode(response.body);

@@ -24,15 +24,19 @@ class _TugasDetailState extends State<TugasDetail> {
           children: [
             Text(
               "Id : ${widget.tugas!.id}",
+              style: const TextStyle(fontSize: 20.0),
             ),
             Text(
               "Title : ${widget.tugas!.title}",
+              style: const TextStyle(fontSize: 18.0),
             ),
             Text(
               "Description : ${widget.tugas!.description}",
+              style: const TextStyle(fontSize: 18.0),
             ),
             Text(
               "Deadline : ${widget.tugas!.deadline}",
+              style: const TextStyle(fontSize: 18.0),
             ),
             _tombolEditDelete()
           ],
@@ -47,7 +51,7 @@ class _TugasDetailState extends State<TugasDetail> {
       children: [
         // Tombol Edit
         OutlinedButton(
-            child: const Text("EDIT"),
+            child: const Text("Ubah"),
             onPressed: () {
               Navigator.push(
                   context,
@@ -58,7 +62,7 @@ class _TugasDetailState extends State<TugasDetail> {
             }),
         // Tombol Delete
         OutlinedButton(
-            child: const Text("DELETE"), onPressed: () => confirmHapus()),
+            child: const Text("Hapus"), onPressed: () => confirmHapus()),
       ],
     );
   }

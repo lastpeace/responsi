@@ -1,17 +1,18 @@
 class ApiUrl {
-  static const String baseUrl =
-      'https://responsi1b.dalhaqq.xyz/api/assignments';
-  static const String listTugas = '$baseUrl/tugas';
-  static const String createTugas = '$baseUrl/tugas';
-  static String updateTugas(int id) {
-    return '$baseUrl/tugas/$id';
+  static const String baseUrl = 'https://responsi1b.dalhaqq.xyz/api';
+
+  static const String listAssigment = '$baseUrl/assignments';
+  static const String createAssignment = '$baseUrl/assignments';
+
+  static String updateAssignment(int id) {
+    return '$baseUrl/assignments/$id/update';
   }
 
-  static String showTugas(int id) {
-    return '$baseUrl/tugas/$id';
+  static String showAssignment(int id) {
+    return '$baseUrl/assignments/$id';
   }
 
-  static String deleteTugas(int id) {
-    return '$baseUrl/tugas/$id';
+  static String deleteAssignment(int id) {
+    return '$baseUrl/assignments/$id/delete';
   }
 }
