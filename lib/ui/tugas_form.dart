@@ -171,7 +171,8 @@ class _TugasFormState extends State<TugasForm> {
       showDialog(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-                content: const Text("Permintaan ubah data gagal, silahkan coba lagi"),
+                content: const Text(
+                    "Permintaan ubah data gagal, silahkan coba lagi"),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
